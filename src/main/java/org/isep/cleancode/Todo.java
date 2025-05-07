@@ -7,9 +7,9 @@ public class Todo {
     private final String name;
     private final LocalDate dueDate;
 
-    public Todo(String name, LocalDate date) {
+    public Todo(String name, LocalDate due) {
         this.name = name;
-        this.dueDate = date;
+        this.dueDate = due;
     }
 
     public String getName() {
