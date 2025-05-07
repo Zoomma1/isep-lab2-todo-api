@@ -1,11 +1,11 @@
 package org.isep.cleancode;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TodoStore {
-    private static final List<Todo> todos = new ArrayList<>();
+    private static final List<Todo> todos = new CopyOnWriteArrayList<>();
 
     public static List<Todo> getAllTodos() {
         return Collections.unmodifiableList(todos);
