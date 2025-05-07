@@ -4,21 +4,24 @@ import org.isep.cleancode.application.ITodoRepository;
 import org.isep.cleancode.Todo;
 
 import java.io.*;
+import java.nio.channels.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.time.LocalDate;
 import java.util.*;
 
 public class TodoCsvFilesRepository implements ITodoRepository {
     private final Path filePath;
+    private final Set<String> nameCache = new HashSet<>();
 
     public TodoCsvFilesRepository() {
-        // Uses system APPDATA directory (Windows) or fallback to user home
         String appData = System.getenv("APPDATA");
         if (appData == null) {
             appData = System.getProperty("user.home");
         }
         this.filePath = Paths.get(appData, "todos.csv");
         ensureFileExists();
+        preloadNameCache();
     }
 
     private void ensureFileExists() {
@@ -31,17 +34,29 @@ public class TodoCsvFilesRepository implements ITodoRepository {
         }
     }
 
+    private void preloadNameCache() {
+        for (Todo todo : getAll()) {
+            nameCache.add(todo.getName().toLowerCase());
+        }
+    }
+
     @Override
-    public boolean add(Todo todo) {
-        List<Todo> existing = getAll();
-        boolean exists = existing.stream()
-                .anyMatch(t -> t.getName().equalsIgnoreCase(todo.getName()));
-        if (exists) return false;
+    public synchronized boolean add(Todo todo) {
+        if (nameCache.contains(todo.getName().toLowerCase())) return false;
 
         String line = todo.getName() + "," + (todo.getDueDate() != null ? todo.getDueDate() : "");
-        try (BufferedWriter writer = Files.newBufferedWriter(filePath, StandardOpenOption.APPEND)) {
-            writer.write(line);
-            writer.newLine();
+
+        try (FileChannel channel = FileChannel.open(filePath, StandardOpenOption.WRITE, StandardOpenOption.APPEND);
+             BufferedWriter writer = new BufferedWriter(Channels.newWriter(channel, StandardCharsets.UTF_8))) {
+            FileLock lock = channel.lock();
+            try {
+                writer.write(line);
+                writer.newLine();
+                writer.flush();
+                nameCache.add(todo.getName().toLowerCase());
+            } finally {
+                lock.release();
+            }
         } catch (IOException e) {
             throw new RuntimeException("Failed to write todo to CSV", e);
         }
