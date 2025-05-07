@@ -2,9 +2,11 @@ package org.isep.cleancode.presentation;
 
 import org.isep.cleancode.application.TodoManager;
 import io.javalin.http.Handler;
+import org.isep.cleancode.persistence.inmemory.TodoInMemoryRepository;
 
 public class TodoController {
-    private static final TodoManager manager = new TodoManager();
+
+    private static final TodoManager manager = new TodoManager(new TodoInMemoryRepository());
 
     public static Handler createTodo = ctx -> {
         String name = ctx.formParam("name");
@@ -22,7 +24,5 @@ public class TodoController {
         }
     };
 
-    public static Handler listTodos = ctx -> {
-        ctx.json(manager.getAllTodos());
-    };
+    public static Handler listTodos = ctx -> ctx.json(manager.getAllTodos());
 }
