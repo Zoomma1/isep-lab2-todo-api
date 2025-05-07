@@ -24,7 +24,5 @@ public class TodoController {
         }
     };
 
-    public static Handler listTodos = ctx -> {
-        ctx.json(manager.getAllTodos());
-    };
+    public static Handler listTodos = ctx -> ctx.json(manager.getAllTodos());
 }
