@@ -2,6 +2,7 @@ package org.isep.cleancode;
 
 import io.javalin.http.Handler;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 
 public class TodoController {
@@ -19,7 +20,7 @@ public class TodoController {
         if (due != null && !due.trim().isEmpty()) {
             try {
                 dueDate = LocalDate.parse(due);
-            } catch (Exception e) {
+            } catch (DateTimeException e) {
                 ctx.status(400).result("Invalid 'dueDate'. Must be in YYYY-MM-DD format.");
                 return;
             }
