@@ -1,17 +1,12 @@
 package org.isep.cleancode;
 
-import static spark.Spark.*;
-import com.google.gson.Gson;
+import io.javalin.Javalin;
 
 public class Main {
-    private static final TodoController todoController = new TodoController();
-
     public static void main(String[] args) {
-        port(4567);
+        Javalin app = Javalin.create().start(7000);
 
-        get("/todos", todoController::getAllTodos);
-
-        post("/todos", todoController::createTodo);
+        app.post("/todos", TodoController.createTodo);
+        app.get("/todos", TodoController.listTodos);
     }
 }
-

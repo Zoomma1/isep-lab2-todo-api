@@ -1,32 +1,26 @@
 package org.isep.cleancode;
 
-import com.google.gson.Gson;
-import spark.Request;
-import spark.Response;
-
-import java.util.ArrayList;
-import java.util.List;
+import io.javalin.http.Handler;
 
 public class TodoController {
 
-    // this Todo class should be completed to achieve Step 1
+    public static Handler createTodo = ctx -> {
+        String name = ctx.formParam("name");
 
-    private static final Gson gson = new Gson();
-    private final List<Todo> todos = new ArrayList<>();
+        if (name == null || name.trim().isEmpty() || name.length() > 63) {
+            ctx.status(400).result("Invalid or missing 'name'. Must be non-empty and < 64 chars.");
+            return;
+        }
 
-    public Object getAllTodos(Request req, Response res) {
-        res.type("application/json");
+        Todo newTodo = new Todo(name);
+        boolean added = TodoStore.addTodo(newTodo);
 
-        return gson.toJson(todos);
+        if (!added) {
+            ctx.status(400).result("Todo name must be unique.");
+        } else {
+            ctx.status(201).result("Todo created.");
+        }
     };
 
-    public Object createTodo(Request req, Response res) {
-        Todo newTodo = gson.fromJson(req.body(), Todo.class);
-
-        todos.add(newTodo);
-        res.status(201);
-        res.type("application/json");
-
-        return gson.toJson(newTodo);
-    };
+    public static Handler listTodos = ctx -> ctx.json(TodoStore.getAllTodos());
 }

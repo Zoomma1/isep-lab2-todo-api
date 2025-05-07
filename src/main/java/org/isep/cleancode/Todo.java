@@ -2,9 +2,7 @@ package org.isep.cleancode;
 
 public class Todo {
 
-    // this Todo class should be completed to achieve Step 1
-
-    private String name;
+    private final String name;
 
     public Todo(String name) {
         this.name = name;
@@ -12,9 +10,5 @@ public class Todo {
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }
