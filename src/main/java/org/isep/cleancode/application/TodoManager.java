@@ -16,7 +16,11 @@ public class TodoManager {
 
         LocalDate dueDate = null;
         if (due != null && !due.isBlank()) {
-            dueDate = LocalDate.parse(due);
+            try {
+                dueDate = LocalDate.parse(due);
+            } catch (java.time.format.DateTimeParseException e) {
+                throw new IllegalArgumentException("Invalid date format. Please use 'yyyy-MM-dd'.", e);
+            }
         }
 
         Todo todo = new Todo(name, dueDate);

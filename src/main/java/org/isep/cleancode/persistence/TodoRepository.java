@@ -2,12 +2,12 @@ package org.isep.cleancode.persistence;
 
 import org.isep.cleancode.Todo;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TodoRepository {
-    private final List<Todo> todos = new ArrayList<>();
+    private final List<Todo> todos = new CopyOnWriteArrayList<>();
 
     public List<Todo> getAll() {
         return Collections.unmodifiableList(todos);
