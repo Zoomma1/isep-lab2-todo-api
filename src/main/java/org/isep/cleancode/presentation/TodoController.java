@@ -2,11 +2,11 @@ package org.isep.cleancode.presentation;
 
 import org.isep.cleancode.application.TodoManager;
 import io.javalin.http.Handler;
-import org.isep.cleancode.persistence.inmemory.TodoInMemoryRepository;
+import org.isep.cleancode.persistence.csvfiles.TodoCsvFilesRepository;
 
 public class TodoController {
 
-    private static final TodoManager manager = new TodoManager(new TodoInMemoryRepository());
+    private static final TodoManager manager = new TodoManager(new TodoCsvFilesRepository());
 
     public static Handler createTodo = ctx -> {
         String name = ctx.formParam("name");
